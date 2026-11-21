@@ -1,3 +1,79 @@
+let language = localStorage.getItem("parkour-language") === "en" ? "en" : "ru";
+const englishText = {
+  "Парк паркура": "Parkour Park",
+  "Прыжки по платформам": "Jump Blocks",
+  "Игра про паркур": "Parkour game",
+  "Герой прыгает по платформам": "Player jumping on platforms",
+  "Заново": "Restart",
+  "Широкие долины": "Wide Valleys",
+  "Каменистые долины": "Rocky Valleys",
+  "Страна вулканов": "Volcano Land",
+  "Темные пещеры": "Dark Caves",
+  "Удаление включено": "Remove On",
+  "Удаление": "Remove",
+  "Удаление: нажми на блок, чтобы убрать его. Нажми R, чтобы выйти из режима.": "Remove mode: click a block to delete it. Press R to exit.",
+  "Ходьба: A/D или стрелки. Бег: Shift. Удерживай пробел для высокого прыжка. Нажми ещё раз для двойного прыжка.": "Walk: A/D or arrows. Run: Shift. Hold Space to jump higher. Press again for a double jump.",
+  "Нажми пробел": "Press Space",
+  "Прыгай с блока на блок": "Jump from block to block",
+  "Найдено:": "Found:",
+  "Игрок умер": "You died",
+  "Меня убило крылатое создание": "A winged creature got me",
+  "Игрок умер от враждебного монстра": "You were killed by a monster",
+  "Игрок умер в горячей картошке": "You died in hot potato",
+  "Игрок умер в облаках": "You died in the clouds",
+  "Игрок умер от неизвестной штуки": "You were killed by something unknown",
+  "Игрок погиб от стрелы скелета": "You were hit by a skeleton arrow",
+  "Игра окончена": "Game over",
+  "Нажми «Заново» или пробел": "Press Restart or Space",
+  "ПОБЕДА": "VICTORY",
+  "ПАРК ПАРКУРА": "PARKOUR PARK",
+  "НОВАЯ ИГРА": "NEW GAME",
+  "Выберите уровень:": "Choose a level:",
+  "← → выбор, пробел или ввод — начать": "← → select, Space/Enter — start",
+  "Музыка: ": "Music: ",
+  "Жизни: ": "Lives: ",
+  "Монеты: ": "Coins: ",
+  "Осталось жизней: ": "Lives left: ",
+  "Уровень ": "Level "
+};
+
+function t(text) {
+  if (!text) return text;
+  // Normalize existing UI text so switching languages also updates open messages.
+  let russian = text;
+  for (const [ru, en] of Object.entries(englishText)) {
+    if (text === en) { russian = ru; break; }
+    if (ru.endsWith(" ") && text.startsWith(en) && /^\d+$/.test(text.slice(en.length))) {
+      russian = ru + text.slice(en.length);
+      break;
+    }
+  }
+  if (language === "ru") return russian;
+  if (englishText[russian]) return englishText[russian];
+  for (const [ru, en] of Object.entries(englishText)) {
+    if (ru.endsWith(" ") && russian.startsWith(ru) && /^\d+$/.test(russian.slice(ru.length))) {
+      return en + russian.slice(ru.length);
+    }
+  }
+  return russian;
+}
+
+function applyLanguage() {
+  document.documentElement.lang = language;
+  document.title = t("Парк паркура");
+  document.querySelectorAll("[data-i18n]").forEach(element => {
+    element.textContent = t(element.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-aria]").forEach(element => {
+    element.setAttribute("aria-label", t(element.dataset.i18nAria));
+  });
+  for (const element of [coinsText, livesText, musicButton, toolButton, helpText,
+    deathNotification, message.querySelector("strong"), message.querySelector("span")]) {
+    element.textContent = t(element.textContent);
+  }
+  document.getElementById("language-select").value = language;
+}
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const scoreText = document.getElementById("score");
@@ -460,7 +536,7 @@ function playMusicBeat() {
 }
 
 function updateMusicButton() {
-  musicButton.textContent = `Music ${musicLevel}`;
+  musicButton.textContent = t(`Музыка: ${musicLevel}`);
   musicButton.classList.toggle("is-on", musicLevel > 0);
   musicButton.setAttribute("aria-pressed", String(musicLevel > 0));
 }
@@ -615,7 +691,7 @@ function updateBats() {
       }
       bats.splice(i, 1);
       playRockSound();
-      loseLife("Меня убило крылатое создание");
+      loseLife(t("Меня убило крылатое создание"));
       return;
     }
   }
@@ -677,16 +753,16 @@ function getWorldPoint(clientX, clientY) {
 }
 
 function updateToolText() {
-  toolButton.textContent = removeMode ? "Remove On" : "Remove";
+  toolButton.textContent = removeMode ? t("Удаление включено") : t("Удаление");
   toolButton.classList.toggle("is-remove", removeMode);
   toolButton.setAttribute("aria-pressed", String(removeMode));
   helpText.textContent = removeMode
-    ? "Remove mode: click a block to delete it. Press R to switch back."
-    : "Walk: A/D or arrows. Run: Shift. Hold Space to jump higher. Press again for double jump.";
+    ? t("Удаление: нажми на блок, чтобы убрать его. Нажми R, чтобы выйти из режима.")
+    : t("Ходьба: A/D или стрелки. Бег: Shift. Удерживай пробел для высокого прыжка. Нажми ещё раз для двойного прыжка.");
 }
 
 function updateLivesText() {
-  livesText.textContent = `Lives: ${lives}`;
+  livesText.textContent = t(`Жизни: ${lives}`);
 }
 
 function getRespawnBlock() {
@@ -722,7 +798,7 @@ function respawnPlayer() {
   fallSoundPlayed = false;
 }
 
-function loseLife(deathMessage = "Игрок умер") {
+function loseLife(deathMessage = t("Игрок умер")) {
   if (gameOver) return;
   deathNotification.textContent = deathMessage;
   deathNotificationUntil = Date.now() + 5000;
@@ -735,7 +811,7 @@ function loseLife(deathMessage = "Игрок умер") {
     started = false;
     message.hidden = false;
     message.querySelector("strong").textContent = deathMessage;
-    message.querySelector("span").textContent = `${lives} lives left`;
+    message.querySelector("span").textContent = t(`Осталось жизней: ${lives}`);
     return;
   }
 
@@ -932,15 +1008,15 @@ function loadLevel(level, options = {}) {
     }
   })();
 
-  scoreText.textContent = `Score: ${score}`;
-  coinsText.textContent = `Coins: ${coinsCollected}`;
+  scoreText.textContent = `${score}`;
+  coinsText.textContent = t(`Монеты: ${coinsCollected}`);
   updateLivesText();
-  bestScoreText.textContent = `Best: ${bestScore}`;
+  bestScoreText.textContent = `${bestScore}`;
   updateToolText();
   updateMusicButton();
   message.hidden = false;
-  message.querySelector("strong").textContent = "Press Space";
-  message.querySelector("span").textContent = "Jump from block to block";
+  message.querySelector("strong").textContent = t("Нажми пробел");
+  message.querySelector("span").textContent = t("Прыгай с блока на блок");
 }
 
 function resetGame() {
@@ -954,11 +1030,11 @@ function resetGame() {
     coinsCollected = 0;
     lives = 3;
     nextLifeAt = 50;
-    scoreText.textContent = `Score: ${score}`;
-    coinsText.textContent = `Coins: ${coinsCollected}`;
+    scoreText.textContent = `${score}`;
+    coinsText.textContent = t(`Монеты: ${coinsCollected}`);
     updateLivesText();
     bestScore = Number(localStorage.getItem("parkour-best-score")) || 0;
-    bestScoreText.textContent = `Best: ${bestScore}`;
+    bestScoreText.textContent = `${bestScore}`;
     updateToolText();
     updateMusicButton();
     showMenu();
@@ -966,6 +1042,7 @@ function resetGame() {
 }
 
 function showMenu() {
+  applyLanguage();
   deathNotificationUntil = 0;
   deathNotification.hidden = true;
   screen = "menu";
@@ -1192,7 +1269,7 @@ function updateZombies(previousBottom) {
         continue;
       }
       playRockSound();
-      loseLife("Игрок умер от враждебного монстра");
+      loseLife(t("Игрок умер от враждебного монстра"));
       return;
     }
   }
@@ -1281,7 +1358,7 @@ function collectCoins() {
 
     if (touching) {
       coinsCollected += 1;
-      coinsText.textContent = `Coins: ${coinsCollected}`;
+      coinsText.textContent = t(`Монеты: ${coinsCollected}`);
       playCoinSound();
 
       while (coinsCollected >= nextLifeAt) {
@@ -1303,7 +1380,7 @@ function openChestAt(index) {
   const prize = chest.prize;
   // show symbol briefly via message element
   message.hidden = false;
-  message.querySelector("strong").textContent = "Found:";
+  message.querySelector("strong").textContent = t("Найдено:");
   const sym = prize === "armor" ? "🛡️" : prize === "sword" ? "🗡️" : "🏹";
   message.querySelector("span").textContent = sym;
   setTimeout(() => {
@@ -1459,7 +1536,7 @@ function updatePlayer() {
 
   cameraX = Math.max(0, player.x - 210);
   score = Math.max(score, Math.floor(player.x / 10));
-  scoreText.textContent = `Score: ${score}`;
+  scoreText.textContent = `${score}`;
   collectCoins();
   updateZombies(previousBottom);
   updateBats();
@@ -1494,8 +1571,8 @@ function updatePlayer() {
 
   if (player.y > canvas.height + 140) {
     loseLife(currentLevel === 3 || currentLevel === 4
-      ? "Игрок умер в горячей картошке"
-      : "Игрок умер в облаках");
+      ? t("Игрок умер в горячей картошке")
+      : t("Игрок умер в облаках"));
     return;
   }
 
@@ -1507,20 +1584,20 @@ function updatePlayer() {
       playFallSound();
     } else {
       playRockSound();
-      loseLife("Игрок умер от неизвестной штуки");
+      loseLife(t("Игрок умер от неизвестной штуки"));
       return;
     }
   }
 }
 
-function endGame(deathMessage = "Game over") {
+function endGame(deathMessage = t("Игра окончена")) {
   gameOver = true;
   bestScore = Math.max(bestScore, score);
   localStorage.setItem("parkour-best-score", String(bestScore));
-  bestScoreText.textContent = `Best: ${bestScore}`;
+  bestScoreText.textContent = `${bestScore}`;
   message.hidden = false;
   message.querySelector("strong").textContent = deathMessage;
-  message.querySelector("span").textContent = "Press Restart or Space";
+  message.querySelector("span").textContent = t("Нажми «Заново» или пробел");
 }
 
 function wrapX(x, width) {
@@ -2175,7 +2252,7 @@ function updateEnemyArrows() {
         playRockSound();
       } else {
         playRockSound();
-        loseLife("Игрок погиб от стрелы скелета");
+        loseLife(t("Игрок погиб от стрелы скелета"));
         return;
       }
     }
@@ -2340,9 +2417,9 @@ function drawVictoryOverlay() {
   ctx.textBaseline = "middle";
   ctx.lineWidth = 8;
   ctx.strokeStyle = "#3b0764";
-  ctx.strokeText("VICTORY", 0, 0);
+  ctx.strokeText(t("ПОБЕДА"), 0, 0);
   ctx.fillStyle = "#f0abfc";
-  ctx.fillText("VICTORY", 0, 0);
+  ctx.fillText(t("ПОБЕДА"), 0, 0);
   ctx.restore();
   // draw equipment overlays (outside player transform): armor / sword / bow
   const px = player.x - cameraX;
@@ -2457,8 +2534,8 @@ function drawMenuOverlay() {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.strokeStyle = "#1d3557";
-  ctx.strokeText("PARKOUR PARK", canvas.width / 2, 78);
-  ctx.fillText("PARKOUR PARK", canvas.width / 2, 78);
+  ctx.strokeText(t("ПАРК ПАРКУРА"), canvas.width / 2, 78);
+  ctx.fillText(t("ПАРК ПАРКУРА"), canvas.width / 2, 78);
 
   const groundY = 365;
   ctx.fillStyle = "#5f8f42";
@@ -2479,7 +2556,7 @@ function drawMenuOverlay() {
   ctx.strokeRect(newGameButton.x + 2, newGameButton.y + 2, newGameButton.width - 4, newGameButton.height - 4);
   ctx.fillStyle = "#17202a";
   ctx.font = "900 28px Inter, Segoe UI, sans-serif";
-  ctx.fillText("NEW GAME", canvas.width / 2, newGameButton.y + newGameButton.height / 2 + 1);
+  ctx.fillText(t("НОВАЯ ИГРА"), canvas.width / 2, newGameButton.y + newGameButton.height / 2 + 1);
 }
 
 function getMapLayout() {
@@ -2718,34 +2795,57 @@ function drawMapOverlay() {
     ctx.textBaseline = "middle";
     ctx.fillText(String(levelIndex), p.x, p.y + 1);
 
-    ctx.fillStyle = "#17202a";
-    ctx.font = "800 13px Inter, sans-serif";
+    ctx.save();
+    ctx.fillStyle = "#ffffff";
+    ctx.strokeStyle = "#17202a";
+    ctx.lineWidth = 4;
+    ctx.lineJoin = "round";
+    ctx.font = "900 17px Inter, sans-serif";
     ctx.textBaseline = "alphabetic";
-    ctx.fillText(levelNames[levelIndex] || `Level ${levelIndex}`, p.x, p.y + 44);
+    const label = t(levelNames[levelIndex]) || t(`Уровень ${levelIndex}`);
+    const labelWidth = ctx.measureText(label).width;
+    ctx.fillStyle = "rgba(10, 18, 30, 0.92)";
+    ctx.fillRect(p.x - labelWidth / 2 - 10, p.y + 24, labelWidth + 20, 29);
+    ctx.fillStyle = "#ffffff";
+    ctx.strokeText(label, p.x, p.y + 44);
+    ctx.fillText(label, p.x, p.y + 44);
+    ctx.restore();
   }
 
   const selPos = nodePositions.find((p) => p.levelIndex === mapSelectedLevel) || nodePositions[0];
-  ctx.fillStyle = "#17202a";
+  const markerY = selPos.y - 34 + Math.sin(animationTime * 0.08) * 3;
+  ctx.save();
+  ctx.fillStyle = "#ffe66d";
+  ctx.strokeStyle = "#17202a";
+  ctx.lineWidth = 3;
+  ctx.lineJoin = "round";
   ctx.beginPath();
-  ctx.arc(selPos.x, selPos.y - 34 + Math.sin(animationTime * 0.08) * 3, 10, 0, Math.PI * 2);
+  ctx.moveTo(selPos.x - 10, markerY - 14);
+  ctx.lineTo(selPos.x + 10, markerY - 14);
+  ctx.lineTo(selPos.x, markerY);
+  ctx.closePath();
   ctx.fill();
-  ctx.fillStyle = "#f6f7ee";
-  ctx.font = "700 12px Inter, sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("YOU", selPos.x, selPos.y - 33 + Math.sin(animationTime * 0.08) * 3);
+  ctx.stroke();
+  ctx.restore();
 
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = "#17202a";
   ctx.font = "800 19px Inter, sans-serif";
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
-  ctx.fillText("Выберите уровень:", mapX + 12, mapY + 28);
-  const name = levelNames[mapSelectedLevel] || `Уровень ${mapSelectedLevel}`;
-  ctx.font = "800 26px Inter, sans-serif";
+  ctx.fillText(t("Выберите уровень:"), mapX + 12, mapY + 28);
+  const name = t(levelNames[mapSelectedLevel]) || t(`Уровень ${mapSelectedLevel}`);
+  ctx.save();
+  ctx.font = "900 28px Inter, sans-serif";
+  ctx.fillStyle = "#ffe66d";
+  ctx.strokeStyle = "#17202a";
+  ctx.lineWidth = 4;
+  ctx.lineJoin = "round";
+  ctx.strokeText(name, mapX + 12, mapY + 64);
   ctx.fillText(name, mapX + 12, mapY + 64);
+  ctx.restore();
 
   ctx.font = "500 14px Inter, sans-serif";
-  ctx.fillText("← → навигация, Space/Enter — начать", mapX + 12, mapY + mapH - 18);
+  ctx.fillText(t("← → выбор, пробел или ввод — начать"), mapX + 12, mapY + mapH - 18);
 }
 
 function drawPlayer() {
@@ -2954,6 +3054,7 @@ function loop() {
 }
 
 document.addEventListener("keydown", (event) => {
+  if (event.target?.tagName === "SELECT") return;
   ensureAudio();
   const key = getKeyName(event);
   const code = event.code || "";
@@ -3167,6 +3268,13 @@ canvas.addEventListener("touchstart", (event) => {
   }
 
   useTool(touch.clientX, touch.clientY);
+});
+
+document.getElementById("language-select").addEventListener("change", (event) => {
+  language = event.target.value === "en" ? "en" : "ru";
+  localStorage.setItem("parkour-language", language);
+  keys.clear();
+  applyLanguage();
 });
 
 showMenu();

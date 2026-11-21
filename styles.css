@@ -196,3 +196,31 @@ button:hover {
 .message[hidden] {
   display: none;
 }
+
+.language-picker {
+  display: grid;
+  gap: 6px;
+  flex-shrink: 0;
+  color: #dce5ec;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.language-picker select {
+  padding: 8px 10px;
+  border: 1px solid #78dcca;
+  border-radius: 6px;
+  background: #17202a;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.language-picker select:focus-visible {
+  outline: 3px solid #f4c95d;
+  outline-offset: 3px;
+}
+
+.top-bar {
+  flex-wrap: wrap;
+}

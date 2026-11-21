@@ -1,43 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Parkour Park</title>
+    <title>Парк паркура</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="page-shell">
-      <section class="game-panel" aria-label="Parkour game">
+      <section class="game-panel" aria-label="Игра про паркур" data-i18n-aria="Игра про паркур">
         <div class="top-bar">
           <div>
-            <p class="eyebrow">Parkour Park</p>
-            <h1>Jump Blocks</h1>
+            <p class="eyebrow" data-i18n="Парк паркура">Парк паркура</p>
+            <h1 data-i18n="Прыжки по платформам">Прыжки по платформам</h1>
           </div>
+          <label class="language-picker">
+            <span>Русский / English</span>
+            <select id="language-select" aria-label="Русский / English">
+              <option value="ru">Русский</option>
+              <option value="en">English</option>
+            </select>
+          </label>
           <div class="stats">
-            <span id="score">Score: 0</span>
-            <span id="coins">Coins: 0</span>
-            <span id="lives">Lives: 3</span>
-            <span id="best-score">Best: 0</span>
+            <span id="score">0</span>
+            <span id="coins">Монеты: 0</span>
+            <span id="lives">Жизни: 3</span>
+            <span id="best-score">0</span>
           </div>
         </div>
 
         <div class="game-wrap">
-          <canvas id="game" width="960" height="540" aria-label="Player jumping on blocks"></canvas>
+          <canvas id="game" width="960" height="540" aria-label="Герой прыгает по платформам" data-i18n-aria="Герой прыгает по платформам"></canvas>
           <div id="death-notification" class="death-notification" role="status" aria-live="polite" hidden></div>
           <div id="message" class="message">
-            <strong>Press Space</strong>
-            <span>Jump from block to block</span>
+            <strong>Нажми пробел</strong>
+            <span>Прыгай с блока на блок</span>
           </div>
         </div>
 
         <div class="controls">
           <div class="tool-buttons">
-            <button id="restart-button" type="button">Restart</button>
-            <button id="tool-button" type="button" aria-pressed="false">Remove</button>
-            <button id="music-button" type="button" aria-pressed="false">Music 0</button>
+            <button id="restart-button" type="button" data-i18n="Заново">Заново</button>
+            <button id="tool-button" type="button" aria-pressed="false">Удаление</button>
+            <button id="music-button" type="button" aria-pressed="false">Музыка: 0</button>
           </div>
-          <p id="help-text">Walk: A/D or arrows. Run: Shift. Hold Space to jump higher. Press again for double jump.</p>
+          <p id="help-text">Ходьба: A/D или стрелки. Бег: Shift. Удерживай пробел для высокого прыжка. Нажми ещё раз для двойного прыжка.</p>
         </div>
       </section>
     </main>
