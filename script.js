@@ -3273,12 +3273,14 @@ canvas.addEventListener("touchstart", (event) => {
   useTool(touch.clientX, touch.clientY);
 });
 
-document.getElementById("language-select").addEventListener("change", (event) => {
+function selectLanguage(event) {
   language = event.target.value === "en" ? "en" : "ru";
   localStorage.setItem("parkour-language", language);
   keys.clear();
   applyLanguage();
-});
+}
+document.getElementById("language-select").addEventListener("input", selectLanguage);
+document.getElementById("language-select").addEventListener("change", selectLanguage);
 
 const fullscreenButton = document.getElementById("fullscreen-button");
 const fullscreenStatus = document.getElementById("fullscreen-status");

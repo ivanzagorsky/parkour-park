@@ -55,3 +55,26 @@ test('restores English and translates new status updates', () => {
   assert.equal(g.run('t("НОВАЯ ИГРА")'), 'NEW GAME');
   assert.equal(game('unknown').run('language'), 'ru');
 });
+
+test('main menu paints Russian and English labels matching the language selector', () => {
+  const g = game('en');
+  g.run(`
+    globalThis.paintedLabels = [];
+    Object.assign(ctx, {
+      fillRect() {}, strokeRect() {}, strokeText() {},
+      fillText(text) { paintedLabels.push(text); }
+    });
+    drawPixelZombie = drawPixelSteve = () => {};
+    screen = 'menu';
+  `);
+  for (const [language, title, button] of [
+    ['ru', 'ПАРК ПАРКУРА', 'НОВАЯ ИГРА'],
+    ['en', 'PARKOUR PARK', 'NEW GAME'],
+  ]) {
+    g.element('language-select').handlers.input({ target: { value: language } });
+    g.run('paintedLabels.length = 0; drawMenuOverlay();');
+    assert.deepEqual(Array.from(g.run('paintedLabels')), [title, button]);
+    assert.equal(g.element('language-select').value, language);
+    assert.equal(g.document.documentElement.lang, language);
+  }
+});
