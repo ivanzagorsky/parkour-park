@@ -5,6 +5,9 @@ const englishText = {
   "Игра про паркур": "Parkour game",
   "Герой прыгает по платформам": "Player jumping on platforms",
   "Заново": "Restart",
+  "На весь экран": "Full screen",
+  "Выйти из полного экрана": "Exit full screen",
+  "Не удалось открыть полный экран": "Could not enter full screen",
   "Широкие долины": "Wide Valleys",
   "Каменистые долины": "Rocky Valleys",
   "Страна вулканов": "Volcano Land",
@@ -68,7 +71,7 @@ function applyLanguage() {
     element.setAttribute("aria-label", t(element.dataset.i18nAria));
   });
   for (const element of [coinsText, livesText, musicButton, toolButton, helpText,
-    deathNotification, message.querySelector("strong"), message.querySelector("span")]) {
+    deathNotification, document.getElementById("fullscreen-status"), message.querySelector("strong"), message.querySelector("span")]) {
     element.textContent = t(element.textContent);
   }
   document.getElementById("language-select").value = language;
@@ -3275,6 +3278,33 @@ document.getElementById("language-select").addEventListener("change", (event) =>
   localStorage.setItem("parkour-language", language);
   keys.clear();
   applyLanguage();
+});
+
+const fullscreenButton = document.getElementById("fullscreen-button");
+const fullscreenStatus = document.getElementById("fullscreen-status");
+const gameScreen = document.getElementById("game-screen");
+fullscreenButton.addEventListener("click", async () => {
+  keys.clear();
+  fullscreenStatus.hidden = true;
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else {
+      await gameScreen.requestFullscreen();
+    }
+  } catch {
+    fullscreenStatus.textContent = t("Не удалось открыть полный экран");
+    fullscreenStatus.hidden = false;
+  }
+  fullscreenButton.blur();
+});
+document.addEventListener("fullscreenchange", () => {
+  keys.clear();
+  const label = document.fullscreenElement === gameScreen
+    ? "Выйти из полного экрана" : "На весь экран";
+  fullscreenButton.dataset.i18n = label;
+  fullscreenButton.textContent = t(label);
+  fullscreenStatus.hidden = true;
 });
 
 showMenu();

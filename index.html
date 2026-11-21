@@ -29,7 +29,9 @@
           </div>
         </div>
 
-        <div class="game-wrap">
+        <div class="game-wrap" id="game-screen">
+          <button id="fullscreen-button" type="button" data-i18n="На весь экран">На весь экран</button>
+          <span id="fullscreen-status" class="fullscreen-status" role="status" hidden></span>
           <canvas id="game" width="960" height="540" aria-label="Герой прыгает по платформам" data-i18n-aria="Герой прыгает по платформам"></canvas>
           <div id="death-notification" class="death-notification" role="status" aria-live="polite" hidden></div>
           <div id="message" class="message">
