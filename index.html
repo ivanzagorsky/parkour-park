@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parkour Park</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="game-panel" aria-label="Parkour game">
+        <div class="top-bar">
+          <div>
+            <p class="eyebrow">Parkour Park</p>
+            <h1>Jump Blocks</h1>
+          </div>
+          <div class="stats">
+            <span id="score">Score: 0</span>
+            <span id="coins">Coins: 0</span>
+            <span id="lives">Lives: 3</span>
+            <span id="best-score">Best: 0</span>
+          </div>
+        </div>
+
+        <div class="game-wrap">
+          <canvas id="game" width="960" height="540" aria-label="Player jumping on blocks"></canvas>
+          <div id="death-notification" class="death-notification" role="status" aria-live="polite" hidden></div>
+          <div id="message" class="message">
+            <strong>Press Space</strong>
+            <span>Jump from block to block</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="tool-buttons">
+            <button id="restart-button" type="button">Restart</button>
+            <button id="tool-button" type="button" aria-pressed="false">Remove</button>
+            <button id="music-button" type="button" aria-pressed="false">Music 0</button>
+          </div>
+          <p id="help-text">Walk: A/D or arrows. Run: Shift. Hold Space to jump higher. Press again for double jump.</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
